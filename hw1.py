@@ -1,4 +1,3 @@
-
 job = [[0, 0, 0], [10, 50, 10], [10, 38, 5], [13, 49, 1], [4, 12, 5],
        [9, 20, 10], [4, 105, 1], [8, 73, 5], [15, 45, 10], [7, 6, 5],
        [1, 64, 1], [9, 15, 5], [3, 6, 10], [15, 92, 10], [9, 43, 5],
@@ -7,7 +6,7 @@ job = [[0, 0, 0], [10, 50, 10], [10, 38, 5], [13, 49, 1], [4, 12, 5],
        ]
 # job  [Processing Time, Due Time, Weights]
 choose = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-tabulist= [[1, 4], [4, 1]]
+tabulist= []
 #tabulist_len = input('input tabulist len')
 
 def count_t(inputarray):
@@ -16,32 +15,38 @@ def count_t(inputarray):
     for i in range(0, 20):
         processtime += job[inputarray[i]][0]
         t += job[inputarray[i]][2]*max(processtime - job[inputarray[i]][1], 0)
-    return  t
+    return t
 
 def Tabu():
-    bestchoose = choose[:]
-    bestnum = count_t()
-    for n in range(0, 50):
-        t = 999999
+    historyBestchoose = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    histroyBestnum = count_t(historyBestchoose)
+    localBestChoose = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    for n in range(0, 100):
+        localbest = 999999
+        swapNum = []
         for i in range(0, 19):
-            swap = choose[:]
-            swap[i], swap[i+1] = swap[i+1], swap[i]
-            temp = count_t(swap)
-            if t > temp and tabulist.count([swap[i], swap[i+1]]) == 0 and tabulist.count([swap[i+1], swap[i]]):
-                t = temp
-                tabulist.append()   ////////////////////////
-        if bestnum > t:
-            bestnum = t
+            tempChoose = localBestChoose[:]
+            tempChoose[i], tempChoose[i+1] = tempChoose[i+1], tempChoose[i]
+            localcount = count_t(tempChoose)
+            if localbest > localcount and tabulist.count([tempChoose[i], tempChoose[i+1]]) == 0 and tabulist.count([tempChoose[i+1], tempChoose[i]]) == 0:
+                localbest = localcount
+                swapNum = [i, i+1]
+        localBestChoose[swapNum[0]], localBestChoose[swapNum[1]] = localBestChoose[swapNum[1]], localBestChoose[swapNum[0]]
+        tabulist.insert(0, swapNum)
+        if len(tabulist) > 5:
+            tabulist.pop()
+        if histroyBestnum > localbest:
+            histroyBestnum = localbest
+            historyBestchoose = localBestChoose[:]
+        print( "time = ", n, " best: ", histroyBestnum, "\nbestchoose: ", historyBestchoose)
+    print('\nTabu list size is:', 5)
+    print("Min total weighted tardiness is:", histroyBestnum)
+    print('Best choose is:', historyBestchoose)
+    return 0
 
 
 
 
-
-
-print(tabulist.count([1, 4]))
-print(len(tabulist))
-
-print(tabulist)
-
-
+Tabu()
+#print(count_t([12, 4, 5, 1, 2, 8, 16, 9, 7, 10, 17, 3, 6, 20, 13, 11, 14, 18, 15, 19]))
 # print(count_t())
